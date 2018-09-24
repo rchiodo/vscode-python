@@ -3,18 +3,29 @@
 
 'use strict';
 
-import { commands, ExtensionContext, window } from 'vscode';
+import { inject, injectable } from 'inversify';
+import { Disposable, ExtensionContext } from 'vscode';
+import { IApplicationShell, ICommandManager } from '../common/application/types';
+import { IDisposableRegistry } from '../common/types';
+import { IDataScience } from './types';
 
-export class DataScience {
+@injectable()
+export class DataScience implements IDataScience {
+    constructor(@inject(ICommandManager) private commandManager: ICommandManager,
+        @inject(IDisposableRegistry) private disposableRegistry: Disposable[],
+        @inject(IApplicationShell) private appShell: IApplicationShell) {
+        }
+
     public async activate(context: ExtensionContext): Promise<void> {
-       this.registerCommands();
+        this.registerCommands();
     }
 
     private registerCommands(): void {
-        commands.registerCommand('python.datascience', this.executeDatascience);
+        const disposable = this.commandManager.registerCommand('python.datascience', this.executeDataScience, this);
+        this.disposableRegistry.push(disposable);
     }
 
-    private executeDatascience(): void {
-        window.showInformationMessage('Hello Data Science');
+    private async executeDataScience(): Promise<void> {
+       await this.appShell.showInformationMessage('Hello Data Science');
     }
 }
