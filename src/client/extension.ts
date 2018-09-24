@@ -30,6 +30,7 @@ import {
     IMemento, IOutputChannel, WORKSPACE_MEMENTO
 } from './common/types';
 import { registerTypes as variableRegisterTypes } from './common/variables/serviceRegistry';
+import { DataScience } from './datascience/datascience';
 import { AttachRequestArguments, LaunchRequestArguments } from './debugger/Common/Contracts';
 import { BaseConfigurationProvider } from './debugger/configProviders/baseProvider';
 import { registerTypes as debugConfigurationRegisterTypes } from './debugger/configProviders/serviceRegistry';
@@ -104,6 +105,10 @@ export async function activate(context: ExtensionContext): Promise<IExtensionApi
     const jupyterExtension = extensions.getExtension('donjayamanne.jupyter');
     const lintingEngine = serviceManager.get<ILintingEngine>(ILintingEngine);
     lintingEngine.linkJupiterExtension(jupyterExtension).ignoreErrors();
+
+    // Activate the data science features
+    const dataScience = new DataScience();
+    await dataScience.activate(context);
 
     context.subscriptions.push(new LinterCommands(serviceManager));
     const linterProvider = new LinterProvider(context, serviceManager);
