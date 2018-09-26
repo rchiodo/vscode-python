@@ -51,6 +51,38 @@
             "problemMatcher": []
         },
         {
+            "type": "shell",
+            "command": "webpack -w --config webpack.config.js",
+            "label": "Webpack (Dev, Continuous)",
+            "group": "build",
+            "promptOnClose": true,
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "Webpack (Dev, Continuous)",
+                "severity": "error",
+                "fileLocation": "absolute",
+                "source": "webpack-typescript",
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Type checking and linting in progress...",
+                    "endsPattern": "Time: (\\d+)ms"
+                },
+                "pattern": [
+                    {
+                        "regexp": "ERROR in ([^\\(]*)\\((\\d+),(\\d+)\\):",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3
+                    },
+                    {
+                        "regexp": "([A-Za-z0-9-]+):(.*)",
+                        "message": 2,
+                        "code": 1
+                    }
+                ]
+            }
+        },    
+        {
             // Use this to run hygiene and display errors in problems window (very slow on Windows)
             "label": "Hygiene (Problems Window)",
             "type": "gulp",

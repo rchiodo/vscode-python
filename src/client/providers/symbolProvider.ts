@@ -106,7 +106,7 @@ export class JediSymbolProvider implements DocumentSymbolProvider {
         }
 
         const deferred = createDeferred<SymbolInformation[]>();
-        const timer = setTimeout(() => {
+        const timer = global.setTimeout(() => {
             if (token.isCancellationRequested) {
                 return deferred.resolve([]);
             }

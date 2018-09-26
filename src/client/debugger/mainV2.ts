@@ -145,7 +145,7 @@ export class PythonDebugger extends DebugSession {
         return new Promise<void>(async (resolve, reject) => {
             let rejected = false;
             const duration = this.getConnectionTimeout(args);
-            const timeout = setTimeout(() => {
+            const timeout = global.setTimeout(() => {
                 rejected = true;
                 reject(new Error('Timeout waiting for debugger connection'));
             }, duration);

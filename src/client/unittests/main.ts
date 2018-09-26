@@ -120,7 +120,7 @@ export class UnitTestManagementService implements IUnitTestManagementService, Di
         if (this.autoDiscoverTimer) {
             clearTimeout(this.autoDiscoverTimer);
         }
-        this.autoDiscoverTimer = setTimeout(() => this.discoverTests(CommandSource.auto, doc.uri, true, false, true), 1000);
+        this.autoDiscoverTimer = global.setTimeout(() => this.discoverTests(CommandSource.auto, doc.uri, true, false, true), 1000);
     }
     public async autoDiscoverTests() {
         if (!this.workspaceService.hasWorkspaceFolders) {
@@ -323,7 +323,7 @@ export class UnitTestManagementService implements IUnitTestManagementService, Di
             if (this.configChangedTimer) {
                 clearTimeout(this.configChangedTimer);
             }
-            this.configChangedTimer = setTimeout(() => this.configurationChangeHandler(e), 1000);
+            this.configChangedTimer = global.setTimeout(() => this.configurationChangeHandler(e), 1000);
         }));
     }
 }

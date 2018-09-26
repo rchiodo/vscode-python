@@ -213,7 +213,7 @@ suite('SocketCallbackHandler', () => {
         await socketClient.start();
 
         const def = createDeferred<any>();
-        let timeOut: NodeJS.Timer | undefined = setTimeout(() => {
+        let timeOut: NodeJS.Timer | undefined = global.setTimeout(() => {
             def.reject('Handshake not completed in allocated time');
         }, 5000);
 
