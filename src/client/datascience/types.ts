@@ -3,12 +3,11 @@
 
 'use strict';
 
-import { ExtensionContext } from 'vscode';
-
 // Main interface
 export const IDataScience = Symbol('IDataScience');
 export interface IDataScience {
-    activate(context: ExtensionContext): Promise<void>;
+    activate(): Promise<void>;
+    executeDataScience(): Promise<void>;
 }
 
 // Factory for jupyter servers
