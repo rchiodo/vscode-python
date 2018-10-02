@@ -147,7 +147,7 @@ gulp.task('generate-nls', function() {
             .pipe(through.obj((file, enc, next) => {
                 const baseName = path.basename(file.relative);
 
-                // Read the json and make sure they all have the same number of keys
+                // Read the json and make sure they all have the same number of keys in the file
                 const dict = JSON.parse(file.contents, "utf-8");
 
                 // If no keys yet, start out with the first
@@ -170,7 +170,7 @@ gulp.task('generate-nls', function() {
                         message += '\r\nCheck that you have added ALL new strings to ALL languages.';
                         throw new Error(message);
                     }
-                } 
+                }
 
                 // Continue down the stream
                 return next(null, file);
