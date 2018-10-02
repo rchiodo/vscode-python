@@ -38,7 +38,7 @@ function getString(key: string, defValue: string) {
     }
 
     // Lookup the string by the key
-    if (loadedCollection.hasOwnProperty(key)) {
+    if (loadedCollection && loadedCollection.hasOwnProperty(key)) {
         return loadedCollection[key];
     }
 
