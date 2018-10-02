@@ -25,9 +25,9 @@
             }
         },
         {
-            "label": "Compile-nls",
+            "label": "Compile-and-postprocess",
             "type": "npm",
-            "script": "compile-nls",
+            "script": "compile-and-postprocess",
             "isBackground": true,
             "problemMatcher": [
                 "$tsc-watch",

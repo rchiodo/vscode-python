@@ -33,32 +33,8 @@ const _ = require('lodash');
 const nativeDependencyChecker = require('node-has-native-dependencies');
 const flat = require('flat');
 const inlinesource = require('gulp-inline-source');
-/*
-const nls = require('vscode-nls-dev');
-const runSequence = require('run-sequence');
-const typescript = require('typescript');
-const gulpIf = require('gulp-if');
+const through = require('through2');
 
-const languages = [
-    { folderName: 'de', id: 'de' }, 
-    { folderName: 'es', id: 'es' },
-    { folderName: 'fr', id: 'fr' }, 
-    { folderName: 'it', id: 'it' }, 
-    { folderName: 'ja', id: 'ja' }, 
-    { folderName: 'ko-kr', id: 'ko-kr' }, 
-    { folderName: 'pt-br', id: 'pt-br' }, 
-    { folderName: 'ru', id: 'ru' }, 
-    { folderName: 'zh-cn', id: 'zh-cn' }, 
-    { folderName: 'zh-tw', id: 'zh-tw' }, 
-];
-
-const tsProject = ts.createProject('./tsconfig.json', { typescript });
-
-// Options for controlling compile step
-const inlineMap = true;
-const inlineSource = false;
-const outDest = './out';
-*/
 
 /**
 * Hygiene works by creating cascading subsets of all our files and
@@ -164,59 +140,49 @@ gulp.task('inlinesource', () => {
                 .pipe(gulp.dest('./coverage/lcov-report-inline'));
 });
 
-/*
-gulp.task('prepublish', function(callback) {
-	runSequence('checkNativeDependencies', 'compile', callback);
+gulp.task('generate-nls', function() {
+    let keys;
+    let lastName;
+    return gulp.src('./src/**/localize*.json')
+            .pipe(through.obj((file, enc, next) => {
+                const baseName = path.basename(file.relative);
+
+                // Read the json and make sure they all have the same number of keys
+                const dict = JSON.parse(file.contents, "utf-8");
+
+                // If no keys yet, start out with the first
+                if (!(keys)) {
+                    keys = Object.keys(dict);
+                    lastName = baseName;
+
+                // Otherwise check against the first
+                } else {
+                    const diff = arrayDiff(keys, Object.keys(dict));
+                    if (diff && diff.length > 0) {
+                        // Enumerate all of the different keys to tell the user
+                        let message = baseName + ' and ' + lastName + ' have different keys: \r\n';
+                        for (let i=0; i<diff.length; i++) {
+                            message += '\t'+ diff[i] ;
+                            if (i < diff.length - 1) {
+                                message + '\r\n';
+                            }
+                        }
+                        message += '\r\nCheck that you have added ALL new strings to ALL languages.';
+                        throw new Error(message);
+                    }
+                } 
+
+                // Continue down the stream
+                return next(null, file);
+            }))
+            .pipe(gulp.dest("./out", { 'overwrite': true }));
 });
 
-gulp.task('compile', function() {
-	return compile(false, );
-});
-
-gulp.task('compile-nls', function() {
-	return compile(true);
-});
-
-gulp.task('add-i18n', function() {
-	return gulp.src(['package.nls.json'])
-		.pipe(nls.createAdditionalLanguageFiles(languages, 'i18n'))
-		.pipe(gulp.dest('.'));
-});
-*/
-
-//---- internal
-
-function isLocalizable(file) {
-    if (this) {
-        var basename = path.basename(file.relative);
-
-        // There's only one localizable output.
-        return basename.match(/.*localize.*/)
-    }
-    return false;
-}
-/*
-function compile(buildNls) {
-	var r = tsProject.src()
-		.pipe(sourcemaps.init())
-        .pipe(tsProject()).js
-		.pipe(gulpIf(isLocalizable.bind(buildNls), nls.rewriteLocalizeCalls()))
-		.pipe(gulpIf(isLocalizable.bind(buildNls), nls.createAdditionalLanguageFiles(languages, 'i18n', 'out')));
-
-	if (inlineMap && inlineSource) {
-		r = r.pipe(sourcemaps.write());
-	} else {
-		r = r.pipe(sourcemaps.write("./", {
-			// no inlined source
-			includeContent: inlineSource,
-			// Return relative source map root directories per file.
-			sourceRoot: "./src"
-		}));
-	}
-
-	return r.pipe(gulp.dest(outDest));
-}
-*/
+function arrayDiff(left, right) {
+    return left
+    .filter(x => !right.includes(x))
+    .concat(right.filter(x => !left.includes(x)));
+};
 
 function hasNativeDependencies() {
     let nativeDependencies = nativeDependencyChecker.check(path.join(__dirname, 'node_modules'));

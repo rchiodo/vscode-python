@@ -5,10 +5,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Gulp compile-nls",
+            "name": "Gulp generate-nls",
             "program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
             "args": [
-                "compile-nls"
+                "generate-nls"
             ]
         },
         {
@@ -151,7 +151,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "Compile-nls"
+            "preLaunchTask": "Compile-and-postprocess"
         }
     ],
     "compounds": [
