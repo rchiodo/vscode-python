@@ -25,23 +25,6 @@
             }
         },
         {
-            "label": "Compile-and-postprocess",
-            "type": "npm",
-            "script": "compile-and-postprocess",
-            "isBackground": true,
-            "problemMatcher": [
-                "$tsc-watch",
-                {
-                    "base": "$tslint5",
-                    "fileLocation": "relative"
-                }
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
             "label": "Run Unit Tests",
             "type": "npm",
             "script": "test:unittests",

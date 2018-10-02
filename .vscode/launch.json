@@ -3,15 +3,6 @@
     "version": "0.1.0",
     "configurations": [
         {
-            "type": "node",
-            "request": "launch",
-            "name": "Gulp generate-nls",
-            "program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
-            "args": [
-                "generate-nls"
-            ]
-        },
-        {
             "name": "Extension",
             "type": "extensionHost",
             "request": "launch",
@@ -151,7 +142,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "Compile-and-postprocess"
+            "preLaunchTask": "Compile"
         }
     ],
     "compounds": [
