@@ -8,9 +8,9 @@ click==7.1.2 \
     --hash=sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a \
     --hash=sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc
     # via jedi-language-server
-isort==5.7.0 ; python_version >= "3.6" \
-    --hash=sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e \
-    --hash=sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc
+isort==5.8.0 ; python_version >= "3.6" \
+    --hash=sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6 \
+    --hash=sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d
     # via -r requirements.in
 jedi-language-server==0.21.0 ; python_version >= "3.6" \
     --hash=sha256:7d7ffcb884ac469be1d1d7d286c1c9484c25f08b049c951bec8bf4c88e0cc6b0 \
