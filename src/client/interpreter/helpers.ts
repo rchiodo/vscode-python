@@ -81,28 +81,28 @@ export class InterpreterHelper implements IInterpreterHelper {
     }
 
     public async getInterpreterInformation(pythonPath: string): Promise<undefined | Partial<PythonEnvironment>> {
-        if (await inDiscoveryExperiment(this.experimentService)) {
-            return this.pyenvs.getInterpreterInformation(pythonPath);
-        }
-
-        const fileHash = await getInterpreterHash(pythonPath).catch((ex) => {
-            traceError(`Failed to create File hash for interpreter ${pythonPath}`, ex);
-            return undefined;
-        });
-
-        const store = this.persistentFactory.createGlobalPersistentState<CachedPythonInterpreter>(
-            `${pythonPath}.v3`,
-            undefined,
-            EXPIRY_DURATION,
-        );
-        if (store.value && fileHash && store.value.fileHash === fileHash) {
-            return store.value;
-        }
-        const processService = await this.serviceContainer
-            .get<IPythonExecutionFactory>(IPythonExecutionFactory)
-            .create({ pythonPath });
-
         try {
+            if (await inDiscoveryExperiment(this.experimentService)) {
+                return this.pyenvs.getInterpreterInformation(pythonPath);
+            }
+
+            const fileHash = await getInterpreterHash(pythonPath).catch((ex) => {
+                traceError(`Failed to create File hash for interpreter ${pythonPath}`, ex);
+                return undefined;
+            });
+
+            const store = this.persistentFactory.createGlobalPersistentState<CachedPythonInterpreter>(
+                `${pythonPath}.v3`,
+                undefined,
+                EXPIRY_DURATION,
+            );
+            if (store.value && fileHash && store.value.fileHash === fileHash) {
+                return store.value;
+            }
+            const processService = await this.serviceContainer
+                .get<IPythonExecutionFactory>(IPythonExecutionFactory)
+                .create({ pythonPath, skipAutoSelect: true });
+
             const info = await processService
                 .getInterpreterInformation()
                 .catch<InterpreterInformation | undefined>(() => undefined);

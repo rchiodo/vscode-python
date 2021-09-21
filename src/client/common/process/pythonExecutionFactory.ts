@@ -59,8 +59,9 @@ export class PythonExecutionFactory implements IPythonExecutionFactory {
     }
 
     public async create(options: ExecutionFactoryCreationOptions): Promise<IPythonExecutionService> {
+        // Auto select should not happen if we're in the middle of parsing interpreters
         const interpreterPath = this.interpreterPathExpHelper.get(options.resource);
-        if (!interpreterPath || interpreterPath === 'python') {
+        if (!options.skipAutoSelect && (!interpreterPath || interpreterPath === 'python')) {
             await this.autoSelection.autoSelectInterpreter(options.resource); // Block on this only if no interpreter selected.
         }
         const pythonPath = options.pythonPath
