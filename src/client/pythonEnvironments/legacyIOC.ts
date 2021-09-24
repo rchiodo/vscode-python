@@ -302,8 +302,13 @@ class ComponentAdapter implements IComponentAdapter {
         if (resource !== undefined) {
             wsFolder = vscode.workspace.getWorkspaceFolder(resource);
         }
-        // Untitled files or files outside of the workspace should still use the workspace as the query location
-        if (!wsFolder && vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+        // Untitled files should still use the workspace as the query location
+        if (
+            !wsFolder &&
+            vscode.workspace.workspaceFolders &&
+            vscode.workspace.workspaceFolders.length > 0 &&
+            (!resource || resource.scheme === 'untitled')
+        ) {
             [wsFolder] = vscode.workspace.workspaceFolders;
         }
 
