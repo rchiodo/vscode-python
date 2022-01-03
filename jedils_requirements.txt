@@ -4,27 +4,17 @@
 #
 #    pip-compile --generate-hashes jedils_requirements.in
 #
-dataclasses==0.8 ; python_version <= "3.6" \
-    --hash=sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf \
-    --hash=sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97
-    # via
-    #   -r jedils_requirements.in
-    #   pydantic
 docstring-to-markdown==0.10 \
     --hash=sha256:12f75b0c7b7572defea2d9e24b57ef7ac38c3e26e91c0e5547cfc02b1c168bf6 \
     --hash=sha256:a2cd520599d1499d4a5d4eb16dea5bdebe32e5627504fb417d5733570f3d4d0b
-    # via jedi-language-server
-importlib-metadata==3.10.1 \
-    --hash=sha256:2ec0faae539743ae6aaa84b49a169670a465f7f5d64e6add98388cc29fd1f2f6 \
-    --hash=sha256:c9356b657de65c53744046fa8f7358afe0714a1af7d570c00c3835c2d724a7c1
     # via jedi-language-server
 jedi==0.18.0 \
     --hash=sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93 \
     --hash=sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707
     # via jedi-language-server
-jedi-language-server==0.34.12 \
-    --hash=sha256:a6d272fa82f47407f1bcb8f4ee5d105a2bec450010af2eb60570b0d563d416eb \
-    --hash=sha256:e1194e793d2d7af3dcb1c2b9b7ed6e974eefdd64b1934a30e2043d21cba7aafe
+jedi-language-server==0.35.1 \
+    --hash=sha256:532c16a9199d902bdc88ca991da176fe177f0b3019b826b50bf568a0b0081167 \
+    --hash=sha256:e31185e79e1abdcc5a077305cb24cd3a44798a2db525045b40f6b647dc5bdf08
     # via -r jedils_requirements.in
 parso==0.8.3 \
     --hash=sha256:8c07be290bb59f03588915921e29e8a50002acaf2cdc5fa0e0114f91709fafa0 \
@@ -69,10 +59,4 @@ typeguard==2.13.2 \
 typing-extensions==4.0.1 \
     --hash=sha256:4ca091dea149f945ec56afb48dae714f21e8692ef22a395223bcd328961b6a0e \
     --hash=sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b
-    # via
-    #   importlib-metadata
-    #   pydantic
-zipp==3.6.0 \
-    --hash=sha256:71c644c5369f4a6e07636f0aa966270449561fcea2e3d6747b8d23efaa9d7832 \
-    --hash=sha256:9fe5ea21568a0a70e50f273397638d39b03353731e6cbbb3fd8502a33fec40bc
-    # via importlib-metadata
+    # via pydantic
