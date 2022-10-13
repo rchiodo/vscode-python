@@ -10,8 +10,12 @@ import { testLocatorWatcher } from './watcherTestUtils';
 
 suite('WorkspaceVirtualEnvironment Locator', async () => {
     const testWorkspaceFolder = path.join(TEST_LAYOUT_ROOT, 'workspace', 'folder1');
-    testLocatorWatcher(testWorkspaceFolder, async (root?: string) => new WorkspaceVirtualEnvironmentLocator(Uri.file(root!)), {
-        arg: testWorkspaceFolder,
-        kind: PythonEnvKind.Venv,
-    });
+    testLocatorWatcher(
+        testWorkspaceFolder,
+        async (root?: string) => new WorkspaceVirtualEnvironmentLocator(Uri.file(root!)),
+        {
+            arg: testWorkspaceFolder,
+            kind: PythonEnvKind.Venv,
+        },
+    );
 });

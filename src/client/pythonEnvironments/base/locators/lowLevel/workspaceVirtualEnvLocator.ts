@@ -56,7 +56,7 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
 
     public constructor(private readonly root: Uri) {
         super(
-            () => this.root.scheme === 'file' ? getWorkspaceVirtualEnvDirs(this.root.fsPath) : [],
+            () => (this.root.scheme === 'file' ? getWorkspaceVirtualEnvDirs(this.root.fsPath) : []),
             getVirtualEnvKind,
             {
                 // Note detecting kind of virtual env depends on the file structure around the
