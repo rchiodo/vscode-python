@@ -13,6 +13,7 @@ import { FSWatcherKind, FSWatchingLocator } from './fsWatchingLocator';
 import '../../../../common/extensions';
 import { asyncFilter } from '../../../../common/utils/arrayUtils';
 import { traceVerbose } from '../../../../logging';
+import { Uri } from 'vscode';
 
 /**
  * Default number of levels of sub-directories to recurse when looking for interpreters.
@@ -53,9 +54,9 @@ async function getVirtualEnvKind(interpreterPath: string): Promise<PythonEnvKind
 export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
     public readonly providerId: string = 'workspaceVirtualEnvLocator';
 
-    public constructor(private readonly root: string) {
+    public constructor(private readonly root: Uri) {
         super(
-            () => getWorkspaceVirtualEnvDirs(this.root),
+            () => this.root.scheme === 'file' ? getWorkspaceVirtualEnvDirs(this.root.fsPath) : [],
             getVirtualEnvKind,
             {
                 // Note detecting kind of virtual env depends on the file structure around the
@@ -67,8 +68,8 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
     }
 
     protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
-        async function* iterator(root: string) {
-            const envRootDirs = await getWorkspaceVirtualEnvDirs(root);
+        async function* iterator(root: Uri) {
+            const envRootDirs = root.scheme === 'file' ? await getWorkspaceVirtualEnvDirs(root.fsPath) : [];
             const envGenerators = envRootDirs.map((envRootDir) => {
                 async function* generator() {
                     traceVerbose(`Searching for workspace virtual envs in: ${envRootDir}`);

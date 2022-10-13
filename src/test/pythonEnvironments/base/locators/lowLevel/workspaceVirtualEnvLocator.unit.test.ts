@@ -11,6 +11,7 @@ import { getEnvs } from '../../../../../client/pythonEnvironments/base/locatorUt
 import { TEST_LAYOUT_ROOT } from '../../../common/commonTestConstants';
 import { assertBasicEnvsEqual } from '../envTestUtils';
 import { createBasicEnv } from '../../common';
+import { Uri } from 'vscode';
 
 suite('WorkspaceVirtualEnvironment Locator', () => {
     const testWorkspaceFolder = path.join(TEST_LAYOUT_ROOT, 'workspace', 'folder1');
@@ -27,7 +28,7 @@ suite('WorkspaceVirtualEnvironment Locator', () => {
                 /* do nothing */
             },
         });
-        locator = new WorkspaceVirtualEnvironmentLocator(testWorkspaceFolder);
+        locator = new WorkspaceVirtualEnvironmentLocator(Uri.file(testWorkspaceFolder));
     });
     teardown(async () => {
         await locator.dispose();
