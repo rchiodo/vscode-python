@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import * as path from 'path';
+import { Uri } from 'vscode';
 import { chain, iterable } from '../../../../common/utils/async';
 import { findInterpretersInDir, looksLikeBasicVirtualPython } from '../../../common/commonUtils';
 import { pathExists } from '../../../common/externalDependencies';
@@ -13,7 +14,6 @@ import { FSWatcherKind, FSWatchingLocator } from './fsWatchingLocator';
 import '../../../../common/extensions';
 import { asyncFilter } from '../../../../common/utils/arrayUtils';
 import { traceVerbose } from '../../../../logging';
-import { Uri } from 'vscode';
 
 /**
  * Default number of levels of sub-directories to recurse when looking for interpreters.
