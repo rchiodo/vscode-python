@@ -130,7 +130,7 @@ export abstract class LazyResourceBasedLocator extends Locator<BasicEnvInfo> imp
                 traceError(ex);
                 this.watchersReady?.reject(ex);
             });
-            this.watchersReady.resolve();
         }
+        this.watchersReady.resolve();
     }
 }
