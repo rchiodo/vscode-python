@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 import * as path from 'path';
-import { Uri } from 'vscode';
 import { chain, iterable } from '../../../../common/utils/async';
 import { findInterpretersInDir, looksLikeBasicVirtualPython } from '../../../common/commonUtils';
 import { pathExists } from '../../../common/externalDependencies';
@@ -54,9 +53,9 @@ async function getVirtualEnvKind(interpreterPath: string): Promise<PythonEnvKind
 export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
     public readonly providerId: string = 'workspaceVirtualEnvLocator';
 
-    public constructor(private readonly root: Uri) {
+    public constructor(private readonly root: string) {
         super(
-            () => (this.root.scheme === 'file' ? getWorkspaceVirtualEnvDirs(this.root.fsPath) : []),
+            () => getWorkspaceVirtualEnvDirs(this.root),
             getVirtualEnvKind,
             {
                 // Note detecting kind of virtual env depends on the file structure around the
@@ -68,8 +67,8 @@ export class WorkspaceVirtualEnvironmentLocator extends FSWatchingLocator {
     }
 
     protected doIterEnvs(): IPythonEnvsIterator<BasicEnvInfo> {
-        async function* iterator(root: Uri) {
-            const envRootDirs = root.scheme === 'file' ? await getWorkspaceVirtualEnvDirs(root.fsPath) : [];
+        async function* iterator(root: string) {
+            const envRootDirs = await getWorkspaceVirtualEnvDirs(root);
             const envGenerators = envRootDirs.map((envRootDir) => {
                 async function* generator() {
                     traceVerbose(`Searching for workspace virtual envs in: ${envRootDir}`);

@@ -3,7 +3,6 @@
 
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { Uri } from 'vscode';
 import * as fsWatcher from '../../../../../client/common/platform/fileSystemWatcher';
 import * as platformUtils from '../../../../../client/common/utils/platform';
 import { PythonEnvKind } from '../../../../../client/pythonEnvironments/base/info';
@@ -28,7 +27,7 @@ suite('WorkspaceVirtualEnvironment Locator', () => {
                 /* do nothing */
             },
         });
-        locator = new WorkspaceVirtualEnvironmentLocator(Uri.file(testWorkspaceFolder));
+        locator = new WorkspaceVirtualEnvironmentLocator(testWorkspaceFolder);
     });
     teardown(async () => {
         await locator.dispose();
