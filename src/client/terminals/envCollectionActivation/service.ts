@@ -26,7 +26,7 @@ import {
     IPathUtils,
 } from '../../common/types';
 import { Interpreters } from '../../common/utils/localize';
-import { traceError, traceInfo, traceVerbose, traceWarn } from '../../logging';
+import { traceError, traceInfo, traceLog, traceVerbose, traceWarn } from '../../logging';
 import { IInterpreterService } from '../../interpreter/contracts';
 import { defaultShells } from '../../interpreter/activation/service';
 import { IEnvironmentActivationService } from '../../interpreter/activation/types';
@@ -222,7 +222,7 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
                 if (value !== undefined) {
                     if (key === 'PS1') {
                         // We cannot have the full PS1 without executing in terminal, which we do not. Hence prepend it.
-                        traceVerbose(
+                        traceLog(
                             `Prepending environment variable ${key} in collection with ${value} ${JSON.stringify(
                                 defaultPrependOptions,
                             )}`,
@@ -242,7 +242,7 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
                             if (deactivate) {
                                 value = `${deactivate}${this.separator}${value}`;
                             }
-                            traceVerbose(
+                            traceLog(
                                 `Prepending environment variable ${key} in collection with ${value} ${JSON.stringify(
                                     options,
                                 )}`,
@@ -255,7 +255,7 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
                             if (deactivate) {
                                 value = `${deactivate}${this.separator}${value}`;
                             }
-                            traceVerbose(
+                            traceLog(
                                 `Prepending environment variable ${key} in collection to ${value} ${JSON.stringify(
                                     options,
                                 )}`,
@@ -268,7 +268,7 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
                         applyAtShellIntegration: true,
                         applyAtProcessCreation: true,
                     };
-                    traceVerbose(
+                    traceLog(
                         `Setting environment variable ${key} in collection to ${value} ${JSON.stringify(options)}`,
                     );
                     envVarCollection.replace(key, value, options);
@@ -338,6 +338,8 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
     }
 
     private async getPS1(shell: string, resource: Resource, env: EnvironmentVariables) {
+        // PS1 returned by shell is not predictable: #22078
+        // Hence calculate it ourselves where possible. Should no longer be needed once #22128 is available.
         const customShellType = identifyShellFromShellPath(shell);
         if (this.noPromptVariableShells.includes(customShellType)) {
             return env.PS1;
@@ -347,7 +349,7 @@ export class TerminalEnvVarCollectionService implements IExtensionActivationServ
             const interpreter = await this.interpreterService.getActiveInterpreter(resource);
             const shouldSetPS1 = shouldPS1BeSet(interpreter?.type, env);
             if (shouldSetPS1) {
-                const prompt = getPromptForEnv(interpreter);
+                const prompt = getPromptForEnv(interpreter, env);
                 if (prompt) {
                     return prompt;
                 }
@@ -456,7 +458,7 @@ function shouldSkip(env: string) {
     ].includes(env);
 }
 
-function getPromptForEnv(interpreter: PythonEnvironment | undefined) {
+function getPromptForEnv(interpreter: PythonEnvironment | undefined, env: EnvironmentVariables) {
     if (!interpreter) {
         return undefined;
     }
@@ -464,6 +466,9 @@ function getPromptForEnv(interpreter: PythonEnvironment | undefined) {
         if (interpreter.envName === 'base') {
             // If conda base environment is selected, it can lead to "(base)" appearing twice if we return the env name.
             return undefined;
+        }
+        if (interpreter.type === PythonEnvType.Virtual && env.VIRTUAL_ENV_PROMPT) {
+            return `${env.VIRTUAL_ENV_PROMPT}`;
         }
         return `(${interpreter.envName}) `;
     }
