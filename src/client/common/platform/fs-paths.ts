@@ -4,10 +4,9 @@
 import * as nodepath from 'path';
 import { getSearchPathEnvVarNames } from '../utils/exec';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import { getOSType, OSType } from '../utils/platform';
 import { IExecutables, IFileSystemPaths, IFileSystemPathUtils } from './types';
-
-const untildify = require('untildify');
 
 // The parts of node's 'path' module used by FileSystemPaths.
 interface INodePath {
@@ -120,7 +119,7 @@ export class FileSystemPathUtils implements IFileSystemPathUtils {
         }
         return new FileSystemPathUtils(
             // Use the current user's home directory.
-            untildify('~'),
+            os.homedir(),
             paths,
             Executables.withDefaults(),
             // Use the actual node "path" module.
