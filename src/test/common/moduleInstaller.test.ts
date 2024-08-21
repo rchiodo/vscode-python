@@ -102,7 +102,7 @@ import { MockProcessService } from '../mocks/proc';
 import { UnitTestIocContainer } from '../testing/serviceRegistry';
 import { closeActiveWindows, initializeTest } from '../initialize';
 
-chaiUse(chaiAsPromised);
+chaiUse(chaiAsPromised.default);
 
 const info: PythonEnvironment = {
     architecture: Architecture.Unknown,

@@ -107,7 +107,7 @@ function configure(): SetupOptions {
  */
 function activatePythonExtensionScript() {
     const ex = new Error('Failed to initialize Python extension for tests after 3 minutes');
-    let timer: NodeJS.Timer | undefined;
+    let timer: NodeJS.Timeout | undefined;
     const failed = new Promise((_, reject) => {
         timer = setTimeout(() => reject(ex), MAX_EXTENSION_ACTIVATION_TIME);
     });

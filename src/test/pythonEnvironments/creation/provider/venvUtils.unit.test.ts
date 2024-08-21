@@ -18,7 +18,7 @@ import { EXTENSION_ROOT_DIR_FOR_TESTS } from '../../../constants';
 import { CreateEnv } from '../../../../client/common/utils/localize';
 import { createDeferred } from '../../../../client/common/utils/async';
 
-chaiUse(chaiAsPromised);
+chaiUse(chaiAsPromised.default);
 
 suite('Venv Utils test', () => {
     let findFilesStub: sinon.SinonStub;

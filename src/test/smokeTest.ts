@@ -81,7 +81,7 @@ class TestRunner {
 
     private async extractLatestExtension(targetDir: string): Promise<void> {
         const extensionFile = await new Promise<string>((resolve, reject) =>
-            glob('*.vsix', (ex, files) => (ex ? reject(ex) : resolve(files[0]))),
+            glob.default('*.vsix', (ex, files) => (ex ? reject(ex) : resolve(files[0]))),
         );
         await unzip(extensionFile, targetDir);
     }

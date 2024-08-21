@@ -32,7 +32,7 @@ import { IEnvironmentActivationService } from '../../../client/interpreter/activ
 import * as util from '../../../client/testing/testController/common/utils';
 import { createDeferred } from '../../../client/common/utils/async';
 
-use(chaiAsPromised);
+use(chaiAsPromised.default);
 
 suite('Unit Tests - Debug Launcher', () => {
     let serviceContainer: TypeMoq.IMock<IServiceContainer>;

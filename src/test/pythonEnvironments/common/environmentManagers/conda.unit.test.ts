@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { assert, expect } from 'chai';
 import * as fs from 'fs';
 import * as fsapi from 'fs-extra';
@@ -134,9 +135,9 @@ suite('Conda and its environments are located correctly', () => {
             return (Object.keys(getFile(filePath, 'throwIfMissing')) as unknown) as fs.Dirent[];
         });
 
-        sinon
-            .stub(fs.promises, 'readdir' as any) // eslint-disable-line @typescript-eslint/no-explicit-any
-            .callsFake(async (filePath: fs.PathLike, options?: { withFileTypes?: boolean }) => {
+        sinon.stub(fs.promises, 'readdir').callsFake(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            async (filePath: fs.PathLike, options?: { withFileTypes?: boolean }): Promise<any> => {
                 if (typeof filePath !== 'string') {
                     throw new Error(`expected path to be string, got ${typeof path}`);
                 }
@@ -164,27 +165,30 @@ suite('Conda and its environments are located correctly', () => {
                             isSymbolicLink: () => false,
                             isFIFO: () => false,
                             isSocket: () => false,
+                            parentPath: '',
                         };
                     },
                 );
-            });
+            },
+        );
+        const readFileStub = async (
+            filePath: fs.PathOrFileDescriptor,
+            options: { encoding: BufferEncoding; flag?: string | undefined } | BufferEncoding,
+        ): Promise<string> => {
+            if (typeof filePath !== 'string') {
+                throw new Error(`expected filePath to be string, got ${typeof filePath}`);
+            } else if ((options as any).encoding !== 'utf8') {
+                throw new Error(`Unsupported encoding ${(options as any).encoding}`);
+            }
 
-        sinon
-            .stub(fsapi, 'readFile' as any) // eslint-disable-line @typescript-eslint/no-explicit-any
-            .callsFake(async (filePath: string | Buffer | number, encoding: string) => {
-                if (typeof filePath !== 'string') {
-                    throw new Error(`expected filePath to be string, got ${typeof filePath}`);
-                } else if (encoding !== 'utf8') {
-                    throw new Error(`Unsupported encoding ${encoding}`);
-                }
+            const contents = getFile(filePath);
+            if (typeof contents !== 'string') {
+                throw new Error(`${filePath} is not a file`);
+            }
 
-                const contents = getFile(filePath);
-                if (typeof contents !== 'string') {
-                    throw new Error(`${filePath} is not a file`);
-                }
-
-                return contents;
-            });
+            return contents;
+        };
+        sinon.stub(fsapi, 'readFile' as any).callsFake(readFileStub as any);
 
         sinon.stub(externalDependencies, 'exec').callsFake(async (command: string, args: string[]) => {
             for (const prefix of ['', ...execPath]) {

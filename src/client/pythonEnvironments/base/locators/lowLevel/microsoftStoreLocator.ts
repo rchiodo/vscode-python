@@ -35,7 +35,7 @@ const pythonExeGlob = 'python3.{[0-9],[0-9][0-9]}.exe';
  * @returns {boolean} : Returns true if the path matches pattern for windows python executable.
  */
 function isMicrosoftStorePythonExePattern(interpreterPath: string): boolean {
-    return minimatch(path.basename(interpreterPath), pythonExeGlob, { nocase: true });
+    return minimatch.default(path.basename(interpreterPath), pythonExeGlob, { nocase: true });
 }
 
 /**
