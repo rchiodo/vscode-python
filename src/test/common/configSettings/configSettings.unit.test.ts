@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 
-import untildify = require('untildify');
 import { WorkspaceConfiguration } from 'vscode';
 import { LanguageServerType } from '../../../client/activation/types';
 import { IApplicationEnvironment } from '../../../client/common/application/types';
@@ -195,8 +194,9 @@ suite('Python Settings', async () => {
             .verifiable(TypeMoq.Times.once());
 
         settings.update(config.object);
+        const untildify = await import('untildify');
 
-        expect(settings.condaPath).to.be.equal(untildify(expected.condaPath));
+        expect(settings.condaPath).to.be.equal(untildify.default(expected.condaPath));
         config.verifyAll();
     });
 
