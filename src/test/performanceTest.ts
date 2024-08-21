@@ -123,7 +123,7 @@ class TestRunner {
 
     private async getReleaseVersion(): Promise<string> {
         const url = `https://marketplace.visualstudio.com/items?itemName=${PVSC_EXTENSION_ID}`;
-        const request = bent('string', 'GET', 200);
+        const request = bent.default('string', 'GET', 200);
 
         const content: string = await request(url);
         const re = NamedRegexp('"version"S?:S?"(:<version>\\d{4}\\.\\d{1,2}\\.\\d{1,2})"', 'g');
@@ -143,7 +143,7 @@ class TestRunner {
             return destination;
         }
 
-        await download(url, path.dirname(destination), { filename: path.basename(destination) });
+        await download.default(url, path.dirname(destination), { filename: path.basename(destination) });
         return destination;
     }
 }

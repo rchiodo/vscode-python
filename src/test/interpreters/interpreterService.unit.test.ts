@@ -39,7 +39,7 @@ import * as proposedApi from '../../client/environmentApi';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-use(chaiAsPromised);
+use(chaiAsPromised.default);
 
 suite('Interpreters service', () => {
     let serviceManager: ServiceManager;

@@ -18,7 +18,7 @@ import { clearPythonPathInWorkspaceFolder } from '../../common';
 import { getExtensionSettings } from '../../extensionSettings';
 import { closeActiveWindows, initialize, initializeTest, IS_MULTI_ROOT_TEST, TEST_TIMEOUT } from '../../initialize';
 
-use(chaiAsPromised);
+use(chaiAsPromised.default);
 
 const multirootPath = path.join(__dirname, '..', '..', '..', '..', 'src', 'testMultiRootWkspc');
 const workspace4Path = Uri.file(path.join(multirootPath, 'workspace4'));

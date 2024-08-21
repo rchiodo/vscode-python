@@ -30,7 +30,7 @@ import { ICommandManager } from '../../../../client/common/application/types';
 import { CommandManager } from '../../../../client/common/application/commandManager';
 import * as pythonDebugger from '../../../../client/debugger/pythonDebugger';
 
-use(chaiAsPromised);
+use(chaiAsPromised.default);
 
 suite('Debugging - Adapter Factory', () => {
     let factory: IDebugAdapterDescriptorFactory;

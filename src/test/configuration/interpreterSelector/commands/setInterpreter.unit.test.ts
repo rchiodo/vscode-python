@@ -277,7 +277,7 @@ suite('Set Interpreter Command', () => {
                 >);
                 assert.deepStrictEqual(activeItem, recommended);
             } else {
-                assert(false, 'Not a function');
+                assert.ok(false, 'Not a function');
             }
             delete actualParameters!.activeItem;
             assert.deepStrictEqual(actualParameters, expectedParameters, 'Params not equal');
@@ -331,7 +331,7 @@ suite('Set Interpreter Command', () => {
                 >);
                 assert.deepStrictEqual(activeItem, recommended);
             } else {
-                assert(false, 'Not a function');
+                assert.ok(false, 'Not a function');
             }
             delete actualParameters!.activeItem;
             assert.deepStrictEqual(actualParameters, expectedParameters, 'Params not equal');
@@ -381,7 +381,7 @@ suite('Set Interpreter Command', () => {
                 >);
                 assert.deepStrictEqual(activeItem, noPythonInstalled);
             } else {
-                assert(false, 'Not a function');
+                assert.ok(false, 'Not a function');
             }
             delete actualParameters!.activeItem;
             assert.deepStrictEqual(actualParameters, expectedParameters, 'Params not equal');
@@ -753,7 +753,7 @@ suite('Set Interpreter Command', () => {
                 >);
                 assert.deepStrictEqual(activeItem, recommended);
             } else {
-                assert(false, 'Not a function');
+                assert.ok(false, 'Not a function');
             }
             delete actualParameters!.activeItem;
 
@@ -972,7 +972,7 @@ suite('Set Interpreter Command', () => {
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             await step!(multiStepInput.object as any, state);
-            assert(
+            assert.ok(
                 _enterOrBrowseInterpreterPath.calledOnceWith(multiStepInput.object, {
                     path: undefined,
                     workspace: undefined,
@@ -1523,9 +1523,9 @@ suite('Set Interpreter Command', () => {
 
             expect(inputStep).to.not.equal(undefined, '');
 
-            assert(pickInterpreter.notCalled);
+            assert.ok(pickInterpreter.notCalled);
             await inputStep();
-            assert(pickInterpreter.calledOnce);
+            assert.ok(pickInterpreter.calledOnce);
         });
     });
 });
