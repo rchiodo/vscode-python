@@ -3,10 +3,10 @@
 
 import { Disposable, EventEmitter, Event, Uri } from 'vscode';
 import * as ch from 'child_process';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
 import { PassThrough } from 'stream';
+import * as fs from '../../../../common/platform/fs-paths';
 import { isWindows } from '../../../../common/platform/platformService';
 import { EXTENSION_ROOT_DIR } from '../../../../constants';
 import { createDeferred, createDeferredFrom } from '../../../../common/utils/async';

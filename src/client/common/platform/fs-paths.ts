@@ -182,10 +182,181 @@ export async function copyFile(src: string, dest: string): Promise<void> {
     });
 }
 
+// These function exist so we can stub them out in tests. We can't stub out the fs module directly
+// because of the way that sinon does stubbing, so we have these intermediaries instead.
+export { Stats, WriteStream, ReadStream } from 'fs-extra';
+
+export function existsSync(path: string): boolean {
+    return fs.existsSync(path);
+}
+
+export function readFileSync(filePath: string, encoding: BufferEncoding): string;
+export function readFileSync(filePath: string): Buffer;
+export function readFileSync(filePath: string, options: { encoding: BufferEncoding }): string;
+export function readFileSync(
+    filePath: string,
+    options?: { encoding: BufferEncoding } | BufferEncoding | undefined,
+): string | Buffer {
+    if (typeof options === 'string') {
+        return fs.readFileSync(filePath, { encoding: options });
+    }
+    return fs.readFileSync(filePath, options);
+}
+
+export function readJSONSync(filePath: string): any {
+    return fs.readJSONSync(filePath);
+}
+
+export function readdirSync(path: string): string[];
+export function readdirSync(
+    path: string,
+    options: fs.ObjectEncodingOptions & {
+        withFileTypes: true;
+        recursive?: boolean | undefined;
+    },
+): fs.Dirent[];
+export function readdirSync(
+    path: string,
+    options: fs.ObjectEncodingOptions & {
+        withFileTypes: false;
+        recursive?: boolean | undefined;
+    },
+): string[];
+export function readdirSync(
+    path: fs.PathLike,
+    options?: fs.ObjectEncodingOptions & {
+        withFileTypes: boolean;
+        recursive?: boolean | undefined;
+    },
+): string[] | fs.Dirent[] {
+    if (options === undefined || options.withFileTypes === false) {
+        return fs.readdirSync(path);
+    }
+    return fs.readdirSync(path, { ...options, withFileTypes: true });
+}
+
+export function readlink(path: string): Promise<string> {
+    return fs.readlink(path);
+}
+
+export function unlink(path: string): Promise<void> {
+    return fs.unlink(path);
+}
+
+export function symlink(target: string, path: string, type?: fs.SymlinkType): Promise<void> {
+    return fs.symlink(target, path, type);
+}
+
+export function symlinkSync(target: string, path: string, type?: fs.SymlinkType): void {
+    return fs.symlinkSync(target, path, type);
+}
+
+export function unlinkSync(path: string): void {
+    return fs.unlinkSync(path);
+}
+
+export function statSync(path: string): fs.Stats {
+    return fs.statSync(path);
+}
+
+export function stat(path: string): Promise<fs.Stats> {
+    return fs.stat(path);
+}
+
+export function lstat(path: string): Promise<fs.Stats> {
+    return fs.lstat(path);
+}
+
+export function chmod(path: string, mod: fs.Mode): Promise<void> {
+    return fs.chmod(path, mod);
+}
+
+export function createReadStream(path: string): fs.ReadStream {
+    return fs.createReadStream(path);
+}
+
+export function createWriteStream(path: string): fs.WriteStream {
+    return fs.createWriteStream(path);
+}
+
+export function pathExistsSync(path: string): boolean {
+    return fs.pathExistsSync(path);
+}
+
 export function pathExists(absPath: string): Promise<boolean> {
     return fs.pathExists(absPath);
 }
 
 export function createFile(filename: string): Promise<void> {
     return fs.createFile(filename);
+}
+
+export function rmdir(path: string, options?: fs.RmDirOptions): Promise<void> {
+    return fs.rmdir(path, options);
+}
+
+export function remove(path: string): Promise<void> {
+    return fs.remove(path);
+}
+
+export function readFile(filePath: string, encoding: BufferEncoding): Promise<string>;
+export function readFile(filePath: string): Promise<Buffer>;
+export function readFile(filePath: string, options: { encoding: BufferEncoding }): Promise<string>;
+export function readFile(
+    filePath: string,
+    options?: { encoding: BufferEncoding } | BufferEncoding | undefined,
+): Promise<string | Buffer> {
+    if (typeof options === 'string') {
+        return fs.readFile(filePath, { encoding: options });
+    }
+    return fs.readFile(filePath, options);
+}
+
+export function readJson(filePath: string): Promise<any> {
+    return fs.readJson(filePath);
+}
+
+export function writeFile(filePath: string, data: any, options?: { encoding: BufferEncoding }): Promise<void> {
+    return fs.writeFile(filePath, data, options);
+}
+
+export function mkdir(dirPath: string): Promise<void> {
+    return fs.mkdir(dirPath);
+}
+
+export function mkdirp(dirPath: string): Promise<void> {
+    return fs.mkdirp(dirPath);
+}
+
+export function rename(oldPath: string, newPath: string): Promise<void> {
+    return fs.rename(oldPath, newPath);
+}
+
+export function ensureDir(dirPath: string): Promise<void> {
+    return fs.ensureDir(dirPath);
+}
+
+export function readdir(path: string): Promise<string[]>;
+export function readdir(
+    path: string,
+    options: fs.ObjectEncodingOptions & {
+        withFileTypes: true;
+        recursive?: boolean | undefined;
+    },
+): Promise<fs.Dirent[]>;
+export function readdir(
+    path: fs.PathLike,
+    options?: fs.ObjectEncodingOptions & {
+        withFileTypes: true;
+        recursive?: boolean | undefined;
+    },
+): Promise<string[] | fs.Dirent[]> {
+    if (options === undefined) {
+        return fs.readdir(path);
+    }
+    return fs.readdir(path, options);
+}
+
+export function emptyDir(dirPath: string): Promise<void> {
+    return fs.emptyDir(dirPath);
 }

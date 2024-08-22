@@ -5,7 +5,7 @@
 // IMPORTANT: Do not import anything from the 'client' folder in this file as that folder is not available during smoke tests.
 
 import * as assert from 'assert';
-import * as fs from 'fs-extra';
+import * as fs from '../client/common/platform/fs-paths';
 import * as glob from 'glob';
 import * as path from 'path';
 import { coerce, SemVer } from 'semver';

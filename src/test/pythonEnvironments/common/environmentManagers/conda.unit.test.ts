@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { assert, expect } from 'chai';
 import * as fs from 'fs';
-import * as fsapi from 'fs-extra';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import * as util from 'util';
 import { eq } from 'semver';
+import * as fsapi from '../../../../client/common/platform/fs-paths';
 import * as platform from '../../../../client/common/utils/platform';
 import { PythonEnvKind } from '../../../../client/pythonEnvironments/base/info';
 import { getEnvs } from '../../../../client/pythonEnvironments/base/locatorUtils';

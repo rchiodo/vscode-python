@@ -17,7 +17,7 @@ process.env.VSC_PYTHON_PERF_TEST = '1';
 
 import { spawn } from 'child_process';
 import * as download from 'download';
-import * as fs from 'fs-extra';
+import * as fs from '../client/common/platform/fs-paths';
 import * as path from 'path';
 import * as bent from 'bent';
 import { LanguageServerType } from '../client/activation/types';

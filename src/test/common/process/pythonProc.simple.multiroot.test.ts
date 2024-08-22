@@ -6,9 +6,9 @@
 import { expect, use } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { execFile } from 'child_process';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ConfigurationTarget, Uri } from 'vscode';
+import * as fs from '../../../client/common/platform/fs-paths';
 import { IPythonExecutionFactory, StdErrError } from '../../../client/common/process/types';
 import { IConfigurationService } from '../../../client/common/types';
 import { clearCache } from '../../../client/common/utils/cacheUtils';

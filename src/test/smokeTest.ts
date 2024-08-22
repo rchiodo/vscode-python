@@ -7,7 +7,7 @@
 process.env.VSC_PYTHON_SMOKE_TEST = '1';
 
 import { spawn } from 'child_process';
-import * as fs from 'fs-extra';
+import * as fs from '../client/common/platform/fs-paths';
 import * as glob from 'glob';
 import * as path from 'path';
 import { unzip } from './common';
