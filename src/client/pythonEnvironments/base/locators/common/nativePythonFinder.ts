@@ -21,8 +21,7 @@ import { sendNativeTelemetry, NativePythonTelemetry } from './nativePythonTeleme
 import { NativePythonEnvironmentKind } from './nativePythonUtils';
 import type { IExtensionContext } from '../../../../common/types';
 import { StopWatch } from '../../../../common/utils/stopWatch';
-
-const untildify = require('untildify');
+import { untildify } from '../../../../common/helpers';
 
 const PYTHON_ENV_TOOLS_PATH = isWindows()
     ? path.join(EXTENSION_ROOT_DIR, 'python-env-tools', 'bin', 'pet.exe')

@@ -26,6 +26,7 @@ import * as EnvFileTelemetry from '../../../client/telemetry/envFileTelemetry';
 import { ITestingSettings } from '../../../client/testing/configuration/types';
 import { MockAutoSelectionService } from '../../mocks/autoSelector';
 import { MockMemento } from '../../mocks/mementos';
+import { untildify } from '../../../client/common/helpers';
 
 suite('Python Settings', async () => {
     class CustomPythonSettings extends PythonSettings {
@@ -194,9 +195,8 @@ suite('Python Settings', async () => {
             .verifiable(TypeMoq.Times.once());
 
         settings.update(config.object);
-        const untildify = await import('untildify');
 
-        expect(settings.condaPath).to.be.equal(untildify.default(expected.condaPath));
+        expect(settings.condaPath).to.be.equal(untildify(expected.condaPath));
         config.verifyAll();
     });
 

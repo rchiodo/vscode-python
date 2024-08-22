@@ -12,12 +12,12 @@ import { IWorkspaceService } from '../../../client/common/application/types';
 import { ProcessLogger } from '../../../client/common/process/logger';
 import { getOSType, OSType } from '../../../client/common/utils/platform';
 import * as logging from '../../../client/logging';
+import { untildify } from '../../../client/common/helpers';
 
 suite('ProcessLogger suite', () => {
     let workspaceService: TypeMoq.IMock<IWorkspaceService>;
     let logger: ProcessLogger;
     let traceLogStub: sinon.SinonStub;
-    let untildify: any;
 
     suiteSetup(async () => {
         workspaceService = TypeMoq.Mock.ofType<IWorkspaceService>();
@@ -25,7 +25,6 @@ suite('ProcessLogger suite', () => {
             .setup((w) => w.workspaceFolders)
             .returns(() => [({ uri: { fsPath: path.join('path', 'to', 'workspace') } } as unknown) as WorkspaceFolder]);
         logger = new ProcessLogger(workspaceService.object);
-        untildify = (await import('untildify')).default;
     });
 
     setup(() => {

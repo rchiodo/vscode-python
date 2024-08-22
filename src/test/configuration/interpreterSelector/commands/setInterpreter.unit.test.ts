@@ -47,8 +47,7 @@ import { Commands, Octicons } from '../../../../client/common/constants';
 import { IInterpreterService, PythonEnvironmentsChangedEvent } from '../../../../client/interpreter/contracts';
 import { createDeferred, sleep } from '../../../../client/common/utils/async';
 import { SystemVariables } from '../../../../client/common/variables/systemVariables';
-
-const untildify = require('untildify');
+import { untildify } from '../../../../client/common/helpers';
 
 type TelemetryEventType = { eventName: EventName; properties: unknown };
 
