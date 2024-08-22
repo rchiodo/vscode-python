@@ -3,6 +3,7 @@ import { IRegistry, RegistryHive } from '../../client/common/platform/types';
 import { IPersistentState } from '../../client/common/types';
 import { Architecture } from '../../client/common/utils/platform';
 import { MockMemento } from '../mocks/mementos';
+import * as TypeMoq from 'typemoq';
 
 @injectable()
 export class MockRegistry implements IRegistry {
@@ -55,4 +56,15 @@ export class MockState implements IPersistentState<any> {
     public async updateValue(data: any): Promise<void> {
         this.data = data;
     }
+}
+
+export function createTypeMoq<T>(tag?: string): TypeMoq.IMock<T> {
+    // Use typemoqs for those things that are resolved as promises. mockito doesn't allow nesting of mocks. ES6 Proxy class
+    // is the problem. We still need to make it thenable though. See this issue: https://github.com/florinn/typemoq/issues/67
+    const result = TypeMoq.Mock.ofType<T>();
+    if (tag !== undefined) {
+        (result as any).tag = tag;
+    }
+    result.setup((x: any) => x.then).returns(() => undefined);
+    return result;
 }
