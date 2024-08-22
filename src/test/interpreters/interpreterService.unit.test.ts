@@ -36,7 +36,7 @@ import { ServiceManager } from '../../client/ioc/serviceManager';
 import { PYTHON_PATH } from '../common';
 import { MockAutoSelectionService } from '../mocks/autoSelector';
 import * as proposedApi from '../../client/environmentApi';
-import { createTypeMoq } from './mocks';
+import { createTypeMoq } from '../mocks/helper';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
