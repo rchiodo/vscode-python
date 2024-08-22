@@ -184,7 +184,7 @@ export async function copyFile(src: string, dest: string): Promise<void> {
 
 // These function exist so we can stub them out in tests. We can't stub out the fs module directly
 // because of the way that sinon does stubbing, so we have these intermediaries instead.
-export { Stats, WriteStream, ReadStream } from 'fs-extra';
+export { Stats, WriteStream, ReadStream, PathLike, Dirent, PathOrFileDescriptor } from 'fs-extra';
 
 export function existsSync(path: string): boolean {
     return fs.existsSync(path);
@@ -212,14 +212,12 @@ export function readdirSync(
     path: string,
     options: fs.ObjectEncodingOptions & {
         withFileTypes: true;
-        recursive?: boolean | undefined;
     },
 ): fs.Dirent[];
 export function readdirSync(
     path: string,
     options: fs.ObjectEncodingOptions & {
         withFileTypes: false;
-        recursive?: boolean | undefined;
     },
 ): string[];
 export function readdirSync(
@@ -336,19 +334,29 @@ export function ensureDir(dirPath: string): Promise<void> {
     return fs.ensureDir(dirPath);
 }
 
+export function ensureFile(filePath: string): Promise<void> {
+    return fs.ensureFile(filePath);
+}
+
+export function ensureSymlink(target: string, filePath: string, type?: fs.SymlinkType): Promise<void> {
+    return fs.ensureSymlink(target, filePath, type);
+}
+
+export function appendFile(filePath: string, data: any, options?: { encoding: BufferEncoding }): Promise<void> {
+    return fs.appendFile(filePath, data, options);
+}
+
 export function readdir(path: string): Promise<string[]>;
 export function readdir(
     path: string,
     options: fs.ObjectEncodingOptions & {
         withFileTypes: true;
-        recursive?: boolean | undefined;
     },
 ): Promise<fs.Dirent[]>;
 export function readdir(
     path: fs.PathLike,
     options?: fs.ObjectEncodingOptions & {
         withFileTypes: true;
-        recursive?: boolean | undefined;
     },
 ): Promise<string[] | fs.Dirent[]> {
     if (options === undefined) {

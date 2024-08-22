@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 import { assert, use as chaiUse } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { Uri } from 'vscode';
 import * as path from 'path';
+import * as fs from '../../../../client/common/platform/fs-paths';
 import * as windowApis from '../../../../client/common/vscodeApis/windowApis';
 import * as workspaceApis from '../../../../client/common/vscodeApis/workspaceApis';
 import {

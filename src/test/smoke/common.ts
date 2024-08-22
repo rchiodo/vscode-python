@@ -4,10 +4,10 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as fs from '../../client/common/platform/fs-paths';
 import { JUPYTER_EXTENSION_ID } from '../../client/common/constants';
 import { SMOKE_TEST_EXTENSIONS_DIR } from '../constants';
 import { noop, sleep } from '../core';

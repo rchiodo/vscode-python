@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import { expect, use } from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs-extra';
+import * as fs from '../../../../client/common/platform/fs-paths';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import rewiremock from 'rewiremock';
