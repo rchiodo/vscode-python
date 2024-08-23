@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { Container } from 'inversify';
-import { anything, instance, mock, when } from 'ts-mockito';
+import { anything } from 'ts-mockito';
 import * as TypeMoq from 'typemoq';
 import { Disposable, Memento } from 'vscode';
 import { FileSystem } from '../client/common/platform/fileSystem';
@@ -168,11 +168,13 @@ export class IocContainer {
             IEnvironmentActivationService,
             EnvironmentActivationService,
         );
-        const mockEnvironmentActivationService = mock(EnvironmentActivationService);
-        when(mockEnvironmentActivationService.getActivatedEnvironmentVariables(anything())).thenResolve();
+        const mockEnvironmentActivationService = createTypeMoq<IEnvironmentActivationService>();
+        mockEnvironmentActivationService
+            .setup((m) => m.getActivatedEnvironmentVariables(anything()))
+            .returns(() => Promise.resolve(undefined));
         this.serviceManager.rebindInstance<IEnvironmentActivationService>(
             IEnvironmentActivationService,
-            instance(mockEnvironmentActivationService),
+            mockEnvironmentActivationService.object,
         );
     }
 

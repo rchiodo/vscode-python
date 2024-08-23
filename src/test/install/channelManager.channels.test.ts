@@ -72,7 +72,7 @@ suite('Installation - installation channels', () => {
         const installer1 = mockInstaller(true, '1');
         const installer2 = mockInstaller(true, '2');
 
-        const appShell = TypeMoq.Mock.ofType<IApplicationShell>();
+        const appShell = createTypeMoq<IApplicationShell>();
         serviceManager.addSingletonInstance<IApplicationShell>(IApplicationShell, appShell.object);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
