@@ -16,6 +16,7 @@ import { ServiceContainer } from '../../client/ioc/container';
 import { ServiceManager } from '../../client/ioc/serviceManager';
 import { IServiceContainer } from '../../client/ioc/types';
 import { MockAutoSelectionService } from '../mocks/autoSelector';
+import { createTypeMoq } from '../mocks/helper';
 
 suite('Installation - installation channels', () => {
     let serviceManager: ServiceManager;
@@ -98,7 +99,7 @@ suite('Installation - installation channels', () => {
     });
 
     function mockInstaller(supported: boolean, name: string, priority?: number): TypeMoq.IMock<IModuleInstaller> {
-        const installer = TypeMoq.Mock.ofType<IModuleInstaller>();
+        const installer = createTypeMoq<IModuleInstaller>();
         installer
             .setup((x) => x.isSupported(TypeMoq.It.isAny()))
             .returns(

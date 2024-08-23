@@ -53,6 +53,7 @@ import { MockMemento } from './mocks/mementos';
 import { MockProcessService } from './mocks/proc';
 import { MockProcess } from './mocks/process';
 import { registerForIOC } from './pythonEnvironments/legacyIOC';
+import { createTypeMoq } from './mocks/helper';
 
 export class IocContainer {
     // This may be set (before any registration happens) to indicate
@@ -125,12 +126,10 @@ export class IocContainer {
 
     public registerProcessTypes(): void {
         processRegisterTypes(this.serviceManager);
-        const mockEnvironmentActivationService = mock(EnvironmentActivationService);
-        when(mockEnvironmentActivationService.getActivatedEnvironmentVariables(anything())).thenResolve();
-        this.serviceManager.addSingletonInstance<IEnvironmentActivationService>(
-            IEnvironmentActivationService,
-            instance(mockEnvironmentActivationService),
-        );
+        const mockEnvironmentActivationService = createTypeMoq<IEnvironmentActivationService>();
+        mockEnvironmentActivationService
+            .setup((f) => f.getActivatedEnvironmentVariables(anything()))
+            .returns(() => Promise.resolve(undefined));
     }
 
     public registerVariableTypes(): void {
@@ -151,7 +150,7 @@ export class IocContainer {
     }
 
     public registerMockProcessTypes(): void {
-        const processServiceFactory = TypeMoq.Mock.ofType<IProcessServiceFactory>();
+        const processServiceFactory = createTypeMoq<IProcessServiceFactory>();
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const processService = new MockProcessService(new ProcessService(process.env as any));
