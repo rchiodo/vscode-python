@@ -55,3 +55,6 @@ src/testTestingRootWkspc/coverageWorkspace/.coverage
 
 # ignore ai artifacts generated and placed in this folder
 ai-artifacts/*
+
+# Local historical issue-triage results
+scripts/issue_triage/.triage-results/

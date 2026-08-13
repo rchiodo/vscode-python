@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vscode-python-issue-triage"
+version = "0.1.0"
+description = "Evaluate agent and supervised-ML triage against historical vscode-python issues."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "github-copilot-sdk==1.0.9",
+    "PyGithub>=2.8.0",
+]
+
+[project.scripts]
+issue-triage = "vscode_python_issue_triage.cli:main"
+
+[project.optional-dependencies]
+ml = [
+    "joblib>=1.5.0",
+    "numpy>=2.0.0",
+    "scikit-learn>=1.7.0",
+]
+embeddings = [
+    "joblib>=1.5.0",
+    "numpy>=2.0.0",
+    "scikit-learn>=1.7.0",
+    "sentence-transformers>=5.0.0",
+]
+dev = [
+    "joblib>=1.5.0",
+    "numpy>=2.0.0",
+    "pyright>=1.1.408",
+    "pytest>=8.4.0",
+    "ruff>=0.12.0",
+    "scikit-learn>=1.7.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vscode_python_issue_triage"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["A", "ASYNC", "B", "C4", "E", "F", "I", "N", "PERF", "PIE", "RUF", "SIM", "UP", "W"]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "python-language",
+    "description": "The behavior follows Python language or runtime semantics rather than extension behavior.",
+    "message": "This appears to follow Python language or runtime behavior rather than the VS Code Python extension. The Python language reference is the best starting point: https://docs.python.org/3/reference/"
+  },
+  {
+    "id": "python-standard-library",
+    "description": "The question concerns Python's standard library.",
+    "message": "This appears to concern Python's standard library rather than the VS Code Python extension. Please start with the library documentation: https://docs.python.org/3/library/"
+  },
+  {
+    "id": "third-party-package",
+    "description": "The behavior belongs to a third-party Python package or tool.",
+    "message": "This appears to come from a third-party Python package or tool rather than the VS Code Python extension. Please check that project's documentation and issue tracker using the package and version from your environment."
+  },
+  {
+    "id": "user-code",
+    "description": "The reported result is caused by user code rather than editor integration.",
+    "message": "This appears to be behavior in the Python code itself rather than the VS Code Python extension. Please reduce it to a standalone Python example and consult the Python documentation or a general Python support forum."
+  },
+  {
+    "id": "linter-or-formatter",
+    "description": "The behavior is produced by an upstream linter or formatter.",
+    "message": "This appears to be behavior defined by the configured linter or formatter. Please check that tool's rule documentation and issue tracker; if VS Code invokes it differently from the command line, provide both outputs so we can investigate the integration."
+  }
+]

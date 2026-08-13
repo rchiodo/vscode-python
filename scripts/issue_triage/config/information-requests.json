@@ -1,0 +1,67 @@
+[
+  {
+    "id": "reproduction_steps",
+    "description": "The report does not contain repeatable steps that reach the failure.",
+    "message": "Please provide the smallest numbered set of steps that reproduces the problem from a newly opened VS Code window."
+  },
+  {
+    "id": "expected_actual_behavior",
+    "description": "The expected result or observed result is unclear.",
+    "message": "Please describe what you expected to happen and what happened instead, including the exact error text."
+  },
+  {
+    "id": "extension_version",
+    "description": "The installed Python extension version is needed.",
+    "message": "Please provide the installed version of the Microsoft Python extension, including whether it is the release or pre-release version."
+  },
+  {
+    "id": "vscode_version",
+    "description": "The VS Code version is needed.",
+    "message": "Please run **Help: About** and provide the full VS Code version information."
+  },
+  {
+    "id": "operating_system",
+    "description": "The operating system and version are needed.",
+    "message": "Please provide your operating system, version, and architecture."
+  },
+  {
+    "id": "python_version",
+    "description": "The selected Python runtime version is needed.",
+    "message": "Please provide the output of `python --version` from the environment selected in VS Code."
+  },
+  {
+    "id": "environment_details",
+    "description": "The Python environment type or selected interpreter is unclear.",
+    "message": "Please provide the selected interpreter path and how the environment was created (for example venv, conda, pyenv, Poetry, or system Python)."
+  },
+  {
+    "id": "python_logs",
+    "description": "Python extension logs are needed to diagnose the report.",
+    "message": "Set **Python: Logging Level** to `Debug`, reproduce the problem, and paste the relevant contents of the **Python** output channel. Remove secrets and personal paths first."
+  },
+  {
+    "id": "language_server_logs",
+    "description": "Language server logs are needed.",
+    "message": "Reproduce the problem and provide the relevant contents of the **Python Language Server** output channel. Remove secrets and personal paths first."
+  },
+  {
+    "id": "debugger_logs",
+    "description": "Debugger logs or configuration are needed.",
+    "message": "Please provide your redacted `launch.json`, the Debug Console output, and the debugger log produced while reproducing the problem."
+  },
+  {
+    "id": "testing_logs",
+    "description": "Test discovery or execution logs are needed.",
+    "message": "Set **Python: Logging Level** to `Debug`, run test discovery or the failing test again, and provide the relevant **Python** output channel contents."
+  },
+  {
+    "id": "minimal_reproduction",
+    "description": "A minimal project is needed to isolate project-specific behavior.",
+    "message": "Please provide a minimal repository or file that reproduces the problem, together with the commands needed to set it up. Remove secrets and proprietary code first."
+  },
+  {
+    "id": "extension_bisect",
+    "description": "Another extension may be responsible for the behavior.",
+    "message": "Please run **Help: Start Extension Bisect** and report whether the problem still occurs when other extensions are disabled."
+  }
+]
