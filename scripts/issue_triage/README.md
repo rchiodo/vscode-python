@@ -179,6 +179,22 @@ bug/feature labels do not provide trustworthy ground truth for these actions.
 Acknowledgement responses identify the initial automated route and include the model's concise
 rationale so a maintainer reviewing the issue can see why it was accepted.
 
+To compare retrieval-augmented decisions on the same seeded cohort, add:
+
+```powershell
+uv run --project scripts\issue_triage issue-triage action-triage `
+    --model gpt-5.4 `
+    --cohort-size 20 `
+    --seed 20260813 `
+    --retrieval-count 5 `
+    --output-directory scripts\issue_triage\.triage-results\action-triage-rag
+```
+
+Retrieval uses stateless hashed word and character features, so its representation is not fitted on
+future reports. For each target, only issues created strictly earlier are eligible. Retrieved issues
+and similarity scores are saved with every result. The agent may cite only those retrieved issue
+numbers, and proposed responses link any citations it actually used.
+
 - `comparison.json`: approach selected exclusively by tuning score, with holdout scores reported
   separately.
 

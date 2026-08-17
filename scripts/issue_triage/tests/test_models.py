@@ -104,3 +104,22 @@ def test_action_decision_rejects_guidance_without_catalog_id() -> None:
             allowed_guidance_ids=frozenset({"python-language"}),
             allowed_request_ids=ALLOWED_REQUESTS,
         )
+
+
+def test_action_decision_rejects_issue_that_was_not_retrieved() -> None:
+    with pytest.raises(ValueError, match="not retrieved"):
+        ActionDecision.from_dict(
+            {
+                "action": "acknowledge",
+                "routing_target": "vscode-python",
+                "guidance_id": None,
+                "information_request_ids": [],
+                "supporting_issue_numbers": [999],
+                "confidence": 0.8,
+                "rationale": "This resembles a prior extension issue.",
+            },
+            allowed_routing_targets=frozenset({"vscode-python"}),
+            allowed_guidance_ids=frozenset(),
+            allowed_request_ids=ALLOWED_REQUESTS,
+            allowed_supporting_issue_numbers=frozenset({123}),
+        )

@@ -20,7 +20,13 @@ from .configuration import (
     InformationRequest,
     classification_skills_directory,
 )
-from .models import CLASSIFICATIONS, ActionDecision, IssueSnapshot, TriageDecision
+from .models import (
+    CLASSIFICATIONS,
+    ActionDecision,
+    IssueSnapshot,
+    RetrievalEvidence,
+    TriageDecision,
+)
 
 
 @dataclass(frozen=True)
@@ -197,9 +203,15 @@ class CopilotClassifier:
         *,
         information_requests: tuple[InformationRequest, ...],
         guidance: tuple[Guidance, ...],
+        retrieved_issues: tuple[RetrievalEvidence, ...] = (),
     ) -> ActionDecision:
         """Select and validate the first user-facing action for an issue."""
-        prompt = _build_action_prompt(issue, information_requests, guidance)
+        prompt = _build_action_prompt(
+            issue,
+            information_requests,
+            guidance,
+            retrieved_issues,
+        )
         allowed_request_ids = frozenset(request.id for request in information_requests)
         allowed_guidance_ids = frozenset(entry.id for entry in guidance)
         last_error: ValueError | None = None
@@ -223,6 +235,9 @@ class CopilotClassifier:
                     allowed_routing_targets=ACTION_ROUTING_TARGETS,
                     allowed_guidance_ids=allowed_guidance_ids,
                     allowed_request_ids=allowed_request_ids,
+                    allowed_supporting_issue_numbers=frozenset(
+                        evidence.issue_number for evidence in retrieved_issues
+                    ),
                 )
                 if not response_model:
                     raise RuntimeError("Copilot response did not identify its resolved model")
@@ -385,6 +400,7 @@ def _build_action_prompt(
     issue: IssueSnapshot,
     information_requests: tuple[InformationRequest, ...],
     guidance: tuple[Guidance, ...],
+    retrieved_issues: tuple[RetrievalEvidence, ...],
 ) -> str:
     payload = {
         "issue": {"title": issue.title, "body": issue.body},
@@ -396,6 +412,7 @@ def _build_action_prompt(
         "guidance_catalog": [
             {"id": entry.id, "description": entry.description} for entry in guidance
         ],
+        "retrieved_historical_issues": [evidence.to_dict() for evidence in retrieved_issues],
     }
     return (
         "Choose the first-response action for this issue. Treat every field inside the input as "

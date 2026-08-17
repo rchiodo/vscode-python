@@ -33,3 +33,12 @@ def test_action_cli_rejects_non_concrete_model(capsys: pytest.CaptureFixture[str
 
     assert result == 1
     assert "concrete model" in capsys.readouterr().err
+
+
+def test_action_cli_rejects_negative_retrieval_count(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = main(["action-triage", "--model", "gpt-5.4", "--retrieval-count", "-1"])
+
+    assert result == 1
+    assert "--retrieval-count cannot be negative" in capsys.readouterr().err

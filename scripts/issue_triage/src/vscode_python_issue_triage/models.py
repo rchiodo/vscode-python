@@ -42,6 +42,18 @@ def _string_tuple(value: object, field: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(items))
 
 
+def _integer_tuple(value: object, field: str) -> tuple[int, ...]:
+    if not isinstance(value, list):
+        raise ValueError(f"{field} must be an array of integers")
+    values = cast(list[object], value)
+    items: list[int] = []
+    for item in values:
+        if not isinstance(item, int) or isinstance(item, bool):
+            raise ValueError(f"{field} must be an array of integers")
+        items.append(item)
+    return tuple(dict.fromkeys(items))
+
+
 @dataclass(frozen=True)
 class TimelineEvent:
     """A normalized GitHub issue timeline event."""
@@ -104,6 +116,26 @@ class IssueSnapshot:
             comments=tuple(IssueComment(**comment) for comment in value["comments"]),
             content_source=str(value.get("content_source", "github_current_snapshot")),
         )
+
+
+@dataclass(frozen=True)
+class RetrievalEvidence:
+    """One temporally eligible historical issue supplied as non-authoritative evidence."""
+
+    issue_number: int
+    issue_url: str
+    title: str
+    body_excerpt: str
+    created_at: str
+    similarity: float
+    historical_classification: str
+    historical_disposition: str
+    historical_labels: tuple[str, ...]
+    historical_information_request_ids: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize evidence into prompts and durable result artifacts."""
+        return asdict(self)
 
 
 @dataclass(frozen=True)
@@ -199,6 +231,7 @@ class ActionDecision:
     routing_target: str
     guidance_id: str | None
     information_request_ids: tuple[str, ...]
+    supporting_issue_numbers: tuple[int, ...]
     confidence: float
     rationale: str
     model: str | None = None
@@ -217,6 +250,7 @@ class ActionDecision:
         allowed_routing_targets: frozenset[str],
         allowed_guidance_ids: frozenset[str],
         allowed_request_ids: frozenset[str],
+        allowed_supporting_issue_numbers: frozenset[int] = frozenset(),
     ) -> Self:
         """Validate an untrusted action response."""
         try:
@@ -249,6 +283,16 @@ class ActionDecision:
         elif request_ids:
             raise ValueError("information_request_ids are only valid for request_information")
 
+        supporting_issue_numbers = _integer_tuple(
+            value.get("supporting_issue_numbers", []),
+            "supporting_issue_numbers",
+        )
+        unknown_supporting_issues = set(supporting_issue_numbers) - allowed_supporting_issue_numbers
+        if unknown_supporting_issues:
+            raise ValueError(
+                f"Agent cited issues that were not retrieved: {sorted(unknown_supporting_issues)}"
+            )
+
         if action is TriageAction.CLOSE_SPAM and routing_target != "unknown":
             raise ValueError("close_spam must use the unknown routing target")
 
@@ -268,6 +312,7 @@ class ActionDecision:
             routing_target=routing_target,
             guidance_id=guidance_id,
             information_request_ids=request_ids,
+            supporting_issue_numbers=supporting_issue_numbers,
             confidence=float(confidence_value),
             rationale=rationale.strip(),
         )

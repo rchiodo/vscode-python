@@ -248,6 +248,7 @@ async def _action_triage(options: argparse.Namespace) -> int:
         agent_path=options.agent,
         information_requests_path=options.information_requests,
         guidance_path=options.guidance,
+        retrieval_count=options.retrieval_count,
     )
     print(f"Action triage summary: {options.output_directory / 'action-summary.json'}")
     print(
@@ -486,6 +487,12 @@ def _create_parser() -> argparse.ArgumentParser:
         default=default_catalog_path(),
     )
     action_triage.add_argument("--guidance", type=Path, default=default_guidance_path())
+    action_triage.add_argument(
+        "--retrieval-count",
+        type=int,
+        default=0,
+        help="retrieve this many similar issues created before each target",
+    )
     return parser
 
 
@@ -527,6 +534,9 @@ def _validate_llm_options(options: argparse.Namespace) -> None:
         raise ValueError("--timeout must be greater than 0")
     if options.retries < 0:
         raise ValueError("--retries cannot be negative")
+    retrieval_count = getattr(options, "retrieval_count", 0)
+    if not isinstance(retrieval_count, int) or retrieval_count < 0:
+        raise ValueError("--retrieval-count cannot be negative")
 
 
 def _parse_since(value: str) -> datetime:

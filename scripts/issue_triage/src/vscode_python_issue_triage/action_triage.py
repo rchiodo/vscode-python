@@ -25,7 +25,7 @@ from .configuration import (
     render_information_request,
 )
 from .ml import MLRecord, load_dataset
-from .models import ActionDecision, IssueSnapshot, TriageAction
+from .models import ActionDecision, IssueSnapshot, RetrievalEvidence, TriageAction
 
 ROUTING_TARGET_NAMES = {
     "vscode-python": "VS Code Python extension",
@@ -51,6 +51,7 @@ async def run_action_triage(
     agent_path: Path,
     information_requests_path: Path,
     guidance_path: Path,
+    retrieval_count: int = 0,
 ) -> dict[str, Any]:
     """Generate resumable action decisions for a seeded local cohort."""
     records = load_dataset(dataset_path)
@@ -65,6 +66,11 @@ async def run_action_triage(
     information_requests = load_information_requests(information_requests_path)
     guidance = load_guidance(guidance_path)
     agent = load_agent_definition(agent_path)
+    retriever = None
+    if retrieval_count:
+        from .retrieval import HistoricalIssueRetriever
+
+        retriever = HistoricalIssueRetriever(records)
     results_path = output_directory / "action-results.jsonl"
     configuration = build_action_run_configuration(
         dataset_path=dataset_path,
@@ -76,6 +82,7 @@ async def run_action_triage(
         agent_path=agent_path,
         information_requests_path=information_requests_path,
         guidance_path=guidance_path,
+        retrieval_count=retrieval_count,
     )
     validate_or_create_action_manifest(
         output_directory=output_directory,
@@ -108,6 +115,9 @@ async def run_action_triage(
                         record=record,
                         information_requests=information_requests,
                         guidance=guidance,
+                        retrieved_issues=(
+                            retriever.retrieve(record, count=retrieval_count) if retriever else ()
+                        ),
                     )
                     for record in pending[start : start + concurrency]
                 )
@@ -122,6 +132,7 @@ async def run_action_triage(
         cohort_size=len(cohort),
         model=model,
         seed=seed,
+        retrieval_count=retrieval_count,
     )
     write_json_atomic(output_directory / "action-summary.json", summary)
     return summary
@@ -133,6 +144,7 @@ async def classify_action_record(
     record: MLRecord,
     information_requests: tuple[InformationRequest, ...],
     guidance: tuple[Guidance, ...],
+    retrieved_issues: tuple[RetrievalEvidence, ...] = (),
 ) -> dict[str, Any]:
     """Classify and render one local record without mutating GitHub."""
     issue = IssueSnapshot(
@@ -155,6 +167,7 @@ async def classify_action_record(
             issue,
             information_requests=information_requests,
             guidance=guidance,
+            retrieved_issues=retrieved_issues,
         )
         return {
             "decision": decision.to_dict(),
@@ -165,7 +178,9 @@ async def classify_action_record(
                 decision,
                 information_requests=information_requests,
                 guidance=guidance,
+                retrieved_issues=retrieved_issues,
             ),
+            "retrieved_issues": [evidence.to_dict() for evidence in retrieved_issues],
             "title": issue.title,
         }
     except RecoverableClassificationError as exc:
@@ -175,6 +190,7 @@ async def classify_action_record(
             "issue_number": issue.number,
             "issue_url": issue.url,
             "response": None,
+            "retrieved_issues": [evidence.to_dict() for evidence in retrieved_issues],
             "title": issue.title,
         }
 
@@ -184,23 +200,48 @@ def render_action_response(
     *,
     information_requests: tuple[InformationRequest, ...],
     guidance: tuple[Guidance, ...],
+    retrieved_issues: tuple[RetrievalEvidence, ...] = (),
 ) -> str | None:
     """Render the exact proposed first response for review."""
     if decision.action is TriageAction.CLOSE_SPAM:
         return None
     if decision.action is TriageAction.ACKNOWLEDGE:
         routing_target = ROUTING_TARGET_NAMES[decision.routing_target]
-        return (
+        response = (
             "Thanks for reporting this issue. Our initial automated triage routed this to "
             f"**{routing_target}**.\n\n{decision.rationale}\n\n"
             "Someone from the team will look into it."
         )
+        return _append_supporting_issues(response, decision, retrieved_issues)
     if decision.action is TriageAction.REQUEST_INFORMATION:
-        return render_information_request(decision.information_request_ids, information_requests)
+        response = render_information_request(
+            decision.information_request_ids,
+            information_requests,
+        )
+        return _append_supporting_issues(response, decision, retrieved_issues)
     by_id = {entry.id: entry for entry in guidance}
     if decision.guidance_id is None:
         raise ValueError("provide_guidance decision does not contain a guidance ID")
-    return by_id[decision.guidance_id].message
+    return _append_supporting_issues(
+        by_id[decision.guidance_id].message,
+        decision,
+        retrieved_issues,
+    )
+
+
+def _append_supporting_issues(
+    response: str,
+    decision: ActionDecision,
+    retrieved_issues: tuple[RetrievalEvidence, ...],
+) -> str:
+    if not decision.supporting_issue_numbers:
+        return response
+    by_number = {evidence.issue_number: evidence for evidence in retrieved_issues}
+    links = ", ".join(
+        f"[#{number}]({by_number[number].issue_url})"
+        for number in decision.supporting_issue_numbers
+    )
+    return f"{response}\n\nRelated historical issues considered: {links}."
 
 
 def load_or_create_action_cohort(
@@ -260,6 +301,7 @@ def build_action_run_configuration(
     agent_path: Path,
     information_requests_path: Path,
     guidance_path: Path,
+    retrieval_count: int,
 ) -> dict[str, Any]:
     """Bind all behavior-affecting inputs for safe resume."""
     implementation = hashlib.sha256()
@@ -279,6 +321,11 @@ def build_action_run_configuration(
         "information_requests_sha256": file_sha256(information_requests_path),
         "model": model,
         "retries": retries,
+        "retrieval": {
+            "algorithm": (_retrieval_algorithm() if retrieval_count else None),
+            "count": retrieval_count,
+            "temporal_cutoff": "strictly_before_target_creation",
+        },
         "schema_version": 1,
         "skills": {
             name: file_sha256(classification_skills_directory() / name / "SKILL.md")
@@ -329,6 +376,7 @@ def summarize_action_results(
     cohort_size: int,
     model: str,
     seed: int,
+    retrieval_count: int = 0,
 ) -> dict[str, Any]:
     """Summarize predictions without pretending weak historical labels are truth."""
     completed = [row for row in rows if row.get("error") is None]
@@ -336,15 +384,27 @@ def summarize_action_results(
     routes = Counter(
         str(cast(dict[str, Any], row["decision"])["routing_target"]) for row in completed
     )
+    cited = sum(
+        bool(cast(dict[str, Any], row["decision"]).get("supporting_issue_numbers"))
+        for row in completed
+    )
     return {
         "action_distribution": dict(sorted(actions.items())),
         "cohort_size": cohort_size,
         "completed": len(completed),
         "errors": cohort_size - len(completed),
         "model": model,
+        "retrieval_count": retrieval_count,
+        "results_with_supporting_issues": cited,
         "routing_distribution": dict(sorted(routes.items())),
         "seed": seed,
     }
+
+
+def _retrieval_algorithm() -> str:
+    from .retrieval import RETRIEVAL_ALGORITHM
+
+    return RETRIEVAL_ALGORITHM
 
 
 def append_synced_rows(path: Path, rows: list[dict[str, Any]]) -> None:
