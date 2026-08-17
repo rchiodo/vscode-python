@@ -1,0 +1,45 @@
+name: Refresh issue triage corpus
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * *"
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: issue-triage-corpus
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v9
+        with:
+          version: "0.11.24"
+
+      - name: Download open and closed issue snapshots
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          uv run --project scripts/issue_triage issue-triage refresh-corpus
+          --repository "${{ github.repository }}"
+          --output scripts/issue_triage/.triage-results/hosted/issue-corpus.jsonl
+
+      - name: Upload issue corpus
+        uses: actions/upload-artifact@v7
+        with:
+          name: issue-triage-corpus
+          path: |
+            scripts/issue_triage/.triage-results/hosted/issue-corpus.jsonl
+            scripts/issue_triage/.triage-results/hosted/issue-corpus.manifest.json
+          if-no-files-found: error
+          retention-days: 14

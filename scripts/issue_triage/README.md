@@ -129,6 +129,8 @@ ML artifacts are written under `.triage-results/ml`:
 - `<approach>.predictions.jsonl`: holdout predictions alongside historical outcomes.
 - `<approach>.metrics.json`: tuning and holdout classification, disposition, label, and information
   request metrics.
+- `comparison.json`: approach selected exclusively by tuning score, with holdout scores reported
+  separately.
 
 ### Classification-only LLM prompt comparison
 
@@ -195,8 +197,17 @@ future reports. For each target, only issues created strictly earlier are eligib
 and similarity scores are saved with every result. The agent may cite only those retrieved issue
 numbers, and proposed responses link any citations it actually used.
 
-- `comparison.json`: approach selected exclusively by tuning score, with holdout scores reported
-  separately.
+### Hosted agentic triage
+
+`.github/workflows/refresh-issue-triage-corpus.yml` refreshes compact snapshots of all open and
+closed issues daily and stores them as an Actions artifact. The compiled agentic workflow source is
+`.github/workflows/python-issue-agentic-triage.md`; it restores that artifact, prepares five
+temporally eligible matches, applies the four local skills, and uses safe outputs for one comment
+and at most two allowlisted labels.
+
+The hosted workflow deliberately cannot close, transfer, assign, edit, or remove labels. It uses
+the repository `GITHUB_TOKEN` for issue reads and requires the organization to allow Copilot CLI
+billing through the `copilot-requests: write` permission.
 
 TF-IDF combines word and character n-grams. The embedding approach defaults to
 `sentence-transformers/all-MiniLM-L6-v2`; use `--embedding-model` to choose another model. Both use

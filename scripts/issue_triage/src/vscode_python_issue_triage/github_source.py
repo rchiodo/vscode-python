@@ -88,6 +88,15 @@ class GitHubIssueSource:
             completed_pages=completed_pages,
         )
 
+    def iter_all_issue_pages(self) -> Iterator[tuple[str | None, tuple[Issue, ...]]]:
+        """Yield base payloads for every open and closed issue without timeline hydration."""
+        issues = self._repository.get_issues(
+            state="all",
+            sort="created",
+            direction="asc",
+        )
+        yield from _iter_rest_pages(issues, start_cursor=None, completed_pages=0)
+
     def iter_issue_events(self) -> Iterator[IssueEvent]:
         """Yield repository-wide issue events through paginated bulk requests."""
         yield from self._repository.get_issues_events()

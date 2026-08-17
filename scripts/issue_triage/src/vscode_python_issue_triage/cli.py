@@ -12,6 +12,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from importlib.metadata import version
 from pathlib import Path
+from typing import Any, cast
 
 from .classifier import (
     CopilotClassifier,
@@ -50,6 +51,10 @@ def main(arguments: Sequence[str] | None = None) -> int:
             return asyncio.run(_llm_classify(options))
         if options.command == "action-triage":
             return asyncio.run(_action_triage(options))
+        if options.command == "refresh-corpus":
+            return _refresh_corpus(options)
+        if options.command == "prepare-live-context":
+            return _prepare_live_context(options)
         parser.error("a command is required")
     except KeyboardInterrupt:
         print("Interrupted; completed issue results remain resumable in SQLite.", file=sys.stderr)
@@ -254,6 +259,38 @@ async def _action_triage(options: argparse.Namespace) -> int:
     print(
         f"completed={summary['completed']}, errors={summary['errors']}, "
         f"actions={summary['action_distribution']}"
+    )
+    return 0
+
+
+def _refresh_corpus(options: argparse.Namespace) -> int:
+    from .hosted import refresh_issue_corpus
+
+    count = refresh_issue_corpus(
+        repository=options.repository,
+        output_path=options.output,
+    )
+    print(f"Corpus records: {count}")
+    return 0
+
+
+def _prepare_live_context(options: argparse.Namespace) -> int:
+    if options.retrieval_count < 1:
+        raise ValueError("--retrieval-count must be at least 1")
+    from .hosted import prepare_live_context
+
+    context = prepare_live_context(
+        event_path=options.event_path,
+        corpus_path=options.corpus,
+        output_path=options.output,
+        retrieval_count=options.retrieval_count,
+    )
+    issue = cast(dict[str, Any], context["issue"])
+    retrieval = cast(dict[str, Any], context["retrieval"])
+    retrieved_issues = cast(list[object], retrieval["issues"])
+    print(
+        f"Prepared live context for issue #{issue['number']} "
+        f"with {len(retrieved_issues)} retrieved issues."
     )
     return 0
 
@@ -493,6 +530,35 @@ def _create_parser() -> argparse.ArgumentParser:
         default=0,
         help="retrieve this many similar issues created before each target",
     )
+
+    refresh_corpus = subparsers.add_parser(
+        "refresh-corpus",
+        help="download compact snapshots for all open and closed issues",
+    )
+    hosted_output = default_output / "hosted"
+    refresh_corpus.add_argument("--repository", default="microsoft/vscode-python")
+    refresh_corpus.add_argument(
+        "--output",
+        type=Path,
+        default=hosted_output / "issue-corpus.jsonl",
+    )
+
+    live_context = subparsers.add_parser(
+        "prepare-live-context",
+        help="retrieve historical evidence for one GitHub issues event",
+    )
+    live_context.add_argument("--event-path", type=Path, required=True)
+    live_context.add_argument(
+        "--corpus",
+        type=Path,
+        default=hosted_output / "issue-corpus.jsonl",
+    )
+    live_context.add_argument(
+        "--output",
+        type=Path,
+        default=hosted_output / "live-context.json",
+    )
+    live_context.add_argument("--retrieval-count", type=int, default=5)
     return parser
 
 

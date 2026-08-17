@@ -33,11 +33,9 @@ class HistoricalIssueRetriever:
             return ()
 
         try:
-            target_index = self._records.index(target)
-        except ValueError as exc:
-            raise ValueError(
-                f"Issue #{target.issue_number} is not in the retrieval corpus"
-            ) from exc
+            target_features = self._features[self._records.index(target)]
+        except ValueError:
+            target_features = _hashed_features(_retrieval_text(target))
         target_created_at = _timestamp(target.created_at)
         eligible_indices = [
             index
@@ -50,7 +48,7 @@ class HistoricalIssueRetriever:
             return ()
         ranked = sorted(
             (
-                (index, _cosine_similarity(self._features[target_index], self._features[index]))
+                (index, _cosine_similarity(target_features, self._features[index]))
                 for index in eligible_indices
             ),
             key=lambda item: (-float(item[1]), self._records[item[0]].issue_number),
